@@ -12,6 +12,8 @@ import { AddTransactionDialog } from "@/components/AddTransactionDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Phone, Trash2, Wallet } from "lucide-react";
+import { Pencil } from "lucide-react";
+import { EditBorrowerDialog } from "@/components/EditBorrowerDialog";
 
 function formatCurrency(n: number) {
   return "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2 });
@@ -135,14 +137,20 @@ const BorrowerPage = () => {
             </div>
           </div>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleDelete}
-            className="text-muted-foreground hover:text-destructive shrink-0"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <EditBorrowerDialog borrower={borrower} />
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleDelete}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+
+
         </div>
 
         {/* Summary cards */}
@@ -175,11 +183,10 @@ const BorrowerPage = () => {
                 Balance
               </p>
               <p
-                className={`font-mono font-bold text-lg ${
-                  balance > 0
+                className={`font-mono font-bold text-lg ${balance > 0
                     ? "text-warning"
                     : "text-primary"
-                }`}
+                  }`}
               >
                 {formatCurrency(balance)}
               </p>
@@ -204,7 +211,7 @@ const BorrowerPage = () => {
           <h3 className="font-semibold">
             Transaction History
           </h3>
-         <TransactionTimeline transactions={transactions} />
+          <TransactionTimeline transactions={transactions} />
         </div>
       </main>
     </div>

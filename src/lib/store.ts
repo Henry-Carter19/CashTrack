@@ -49,13 +49,36 @@ export async function addBorrower(data: {
   return inserted;
 }
 
+// export async function updateBorrower(
+//   id: string,
+//   updates: Partial<Pick<Borrower, "name">>
+// ): Promise<void> {
+//   const { error } = await supabase
+//     .from("borrowers")
+//     .update(updates)
+//     .eq("id", id);
+
+//   if (error) {
+//     console.error("Error updating borrower:", error);
+//     throw error;
+//   }
+// }
+
 export async function updateBorrower(
   id: string,
-  updates: Partial<Pick<Borrower, "name">>
+  updates: {
+    name?: string;
+    phone?: string;
+    notes?: string;
+  }
 ): Promise<void> {
   const { error } = await supabase
     .from("borrowers")
-    .update(updates)
+    .update({
+      name: updates.name,
+      phone: updates.phone || null,
+      notes: updates.notes || null,
+    })
     .eq("id", id);
 
   if (error) {
@@ -144,13 +167,36 @@ export async function addTransaction(t: {
   return data;
 }
 
+// export async function updateTransaction(
+//   id: string,
+//   updates: Partial<Pick<Transaction, "amount" | "type" | "date">>
+// ): Promise<void> {
+//   const { error } = await supabase
+//     .from("transactions")
+//     .update(updates)
+//     .eq("id", id);
+
+//   if (error) {
+//     console.error("Error updating transaction:", error);
+//     throw error;
+//   }
+// }
+
 export async function updateTransaction(
   id: string,
-  updates: Partial<Pick<Transaction, "amount" | "type" | "date">>
+  updates: {
+    amount?: number;
+    date?: string;
+    time?: string;
+  }
 ): Promise<void> {
   const { error } = await supabase
     .from("transactions")
-    .update(updates)
+    .update({
+      amount: updates.amount,
+      date: updates.date,
+      time: updates.time,
+    })
     .eq("id", id);
 
   if (error) {

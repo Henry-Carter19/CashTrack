@@ -4,6 +4,7 @@ import { ArrowUpRight, ArrowDownLeft, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteTransaction } from "@/lib/store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { EditTransactionDialog } from "./EditTransactionDialog";
 
 interface Props {
   transactions: Transaction[];
@@ -44,20 +45,20 @@ export function TransactionTimeline({ transactions }: Props) {
       {transactions.map((t) => {
         const isLent = t.type === "lent";
 
-const dateObj = new Date(t.date);
+        const dateObj = new Date(t.date);
 
-// Extract year-month-day safely
-const yyyy = dateObj.getFullYear();
-const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
-const dd = String(dateObj.getDate()).padStart(2, "0");
+        // Extract year-month-day safely
+        const yyyy = dateObj.getFullYear();
+        const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const dd = String(dateObj.getDate()).padStart(2, "0");
 
-// Combine with stored time
-const combined = new Date(`${yyyy}-${mm}-${dd}T${t.time ?? "00:00"}`);
+        // Combine with stored time
+        const combined = new Date(`${yyyy}-${mm}-${dd}T${t.time ?? "00:00"}`);
 
-const formattedDate = format(
-  combined,
-  "MMM d, yyyy • hh:mm a"
-);
+        const formattedDate = format(
+          combined,
+          "MMM d, yyyy • hh:mm a"
+        );
         console.log("Rendering transaction:", t);
 
         return (
@@ -67,11 +68,10 @@ const formattedDate = format(
           >
             {/* Icon */}
             <div
-              className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
-                isLent
+              className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${isLent
                   ? "bg-destructive/10 text-destructive"
                   : "bg-accent text-accent-foreground"
-              }`}
+                }`}
             >
               {isLent ? (
                 <ArrowUpRight className="h-4 w-4" />
@@ -84,9 +84,8 @@ const formattedDate = format(
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline justify-between gap-2">
                 <span
-                  className={`font-mono font-semibold text-lg ${
-                    isLent ? "text-destructive" : "text-primary"
-                  }`}
+                  className={`font-mono font-semibold text-lg ${isLent ? "text-destructive" : "text-primary"
+                    }`}
                 >
                   {isLent ? "-" : "+"}₹
                   {t.amount.toLocaleString("en-IN", {
@@ -104,16 +103,22 @@ const formattedDate = format(
               </p>
             </div>
 
-            {/* Delete Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="shrink-0 h-8 w-8 text-muted-foreground hover:text-destructive"
-              onClick={() => deleteMutation.mutate(t.id)}
-              disabled={deleteMutation.isPending}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
+            {/* Actions */}
+            <div className="flex items-center gap-1 shrink-0">
+              <EditTransactionDialog transaction={t} />
+
+              <Button
+                variant="ghost"
+                size="icon"
+                // className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                 className="shrink-0 h-8 w-8 text-muted-foreground hover:text-destructive"
+                onClick={() => deleteMutation.mutate(t.id)}
+                disabled={deleteMutation.isPending}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+
           </div>
         );
       })}
