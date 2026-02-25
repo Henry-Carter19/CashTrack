@@ -15,7 +15,7 @@ import { EditBorrowerDialog } from "@/components/EditBorrowerDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 function formatCurrency(n: number) {
-  return "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2 });
+  return "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 0 });
 }
 
 const BorrowerPage = () => {
