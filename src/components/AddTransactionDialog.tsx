@@ -24,6 +24,9 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
   const [date, setDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  const [time, setTime] = useState(
+    new Date().toTimeString().slice(0, 5)
+  );
 
   const queryClient = useQueryClient();
   const isLent = type === "lent";
@@ -40,6 +43,7 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
         type,
         amount: amt,
         date,
+        time,
       });
     },
     onSuccess: () => {
@@ -51,7 +55,12 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
       });
 
       setAmount("");
+      setDate(new Date().toISOString().split("T")[0]);
+      setTime(new Date().toTimeString().slice(0, 5));
       setOpen(false);
+    },
+    onError: (error) => {
+      console.error("Add transaction failed:", error);
     },
   });
 
@@ -99,14 +108,26 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="date">Date</Label>
+              <Input
+                id="date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="time">Time</Label>
+              <Input
+                id="time"
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+              />
+            </div>
           </div>
 
           <Button

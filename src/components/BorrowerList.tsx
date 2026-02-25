@@ -37,7 +37,12 @@ export function BorrowerList({ borrowers, onSelect }: Props) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <p className="font-medium truncate">{b.name}</p>
-                {b.phone && <Phone className="h-3 w-3 text-muted-foreground shrink-0" />}
+                {b.phone && (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Phone className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{b.phone}</span>
+                  </div>
+                )}
               </div>
               <div className="flex gap-3 mt-0.5 text-xs text-muted-foreground">
                 <span>Lent: <span className="text-destructive font-mono">{formatCurrency(b.totalLent)}</span></span>

@@ -25,7 +25,11 @@ export function AddBorrowerDialog() {
     mutationFn: async () => {
       if (!name.trim()) throw new Error("Name is required");
 
-      return addBorrower(name.trim());
+      return addBorrower({
+        name: name.trim(),
+        phone: phone.trim() || undefined,
+        notes: notes.trim() || undefined,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["borrowers"] });

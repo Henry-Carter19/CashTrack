@@ -76,6 +76,8 @@ const BorrowerPage = () => {
     );
   }
 
+  console.log("Transactions for borrower:", borrower);
+
   const handleDelete = () => {
     if (
       confirm(

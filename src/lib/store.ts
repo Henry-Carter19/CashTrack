@@ -19,17 +19,23 @@ export async function getBorrowers(): Promise<Borrower[]> {
   return data ?? [];
 }
 
-export async function addBorrower(name: string): Promise<Borrower> {
+export async function addBorrower(data: {
+  name: string;
+  phone?: string;
+  notes?: string;
+}): Promise<Borrower> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) throw new Error("User not authenticated");
 
-  const { data, error } = await supabase
+  const { data: inserted, error } = await supabase
     .from("borrowers")
     .insert({
-      name,
+      name: data.name,
+      phone: data.phone || null,
+      notes: data.notes || null,
       user_id: user.id,
     })
     .select()
@@ -40,7 +46,7 @@ export async function addBorrower(name: string): Promise<Borrower> {
     throw error;
   }
 
-  return data;
+  return inserted;
 }
 
 export async function updateBorrower(
@@ -91,7 +97,8 @@ export async function getTransactionsByBorrower(
     .from("transactions")
     .select("*")
     .eq("borrower_id", borrowerId)
-    .order("date", { ascending: false });
+    .order("date", { ascending: false })
+    .order("time", { ascending: false });
 
   if (error) {
     console.error("Error fetching transactions:", error);
