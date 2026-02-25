@@ -21,12 +21,8 @@ interface Props {
 export function AddTransactionDialog({ borrowerId, type }: Props) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState("");
-  const [date, setDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
-  const [time, setTime] = useState(
-    new Date().toTimeString().slice(0, 5)
-  );
+  const [time, setTime] = useState("");
+  const [date, setDate] = useState("");
 
   const queryClient = useQueryClient();
   const isLent = type === "lent";
@@ -70,7 +66,18 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+
+        if (isOpen) {
+          const now = new Date();
+          setDate(now.toISOString().split("T")[0]);
+          setTime(now.toTimeString().slice(0, 5));
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           variant={isLent ? "default" : "outline"}
@@ -138,8 +145,8 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
             {mutation.isPending
               ? "Recording..."
               : isLent
-              ? "Record Lending"
-              : "Record Payment"}
+                ? "Record Lending"
+                : "Record Payment"}
           </Button>
         </form>
       </DialogContent>
