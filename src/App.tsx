@@ -40,8 +40,26 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+import { supabase } from "@/lib/supabase";
+
+
+
+const App = () => {
+
+    const test = async () => {
+  // const { data, error } = await supabase.from("borrowers").select("*");
+  // console.log(data, error, "mydataerror");
+
+  const { data } = await supabase.auth.getSession();
+console.log(data.session, "mychecksession");
+};
+
+test();
+
+
+
+  return <>
+ <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -71,6 +89,9 @@ const App = () => (
       </Routes>
     </TooltipProvider>
   </QueryClientProvider>
-);
+
+  </>
+
+};
 
 export default App;

@@ -1,15 +1,15 @@
-import { GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
-
-interface GoogleUser {
-  email: string;
-  name: string;
-  picture: string;
-}
+import { supabase } from "@/lib/supabase";
 
 const Login = () => {
-  const navigate = useNavigate();
+
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 relative overflow-hidden">
@@ -36,21 +36,12 @@ const Login = () => {
 
         {/* Google Button */}
         <div className="flex justify-center">
-          <GoogleLogin
-            onSuccess={(credentialResponse) => {
-              if (!credentialResponse.credential) return;
-
-              const decoded: GoogleUser = jwtDecode(
-                credentialResponse.credential
-              );
-
-              localStorage.setItem("user", JSON.stringify(decoded));
-              navigate("/");
-            }}
-            onError={() => {
-              console.log("Login Failed");
-            }}
-          />
+          <button
+            onClick={handleGoogleLogin}
+            className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition"
+          >
+            Sign in with Google
+          </button>
         </div>
 
         {/* Footer */}
