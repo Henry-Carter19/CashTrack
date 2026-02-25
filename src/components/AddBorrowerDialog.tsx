@@ -54,12 +54,13 @@ export function AddBorrowerDialog() {
         </Button>
       </DialogTrigger>
 
-      <DialogContent>
+      {/* ✅ Only this line changed for mobile spacing */}
+      <DialogContent className="w-[90%] max-w-md rounded-xl">
         <DialogHeader>
           <DialogTitle>Add New Borrower</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-2">
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>
             <Input
