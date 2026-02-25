@@ -51,10 +51,10 @@ const App = () => {
   // console.log(data, error, "mydataerror");
 
   const { data } = await supabase.auth.getSession();
-console.log(data.session, "mychecksession");
-};
+    console.log(data.session, "mychecksession");
+  };
 
-test();
+  test();
 
 
 

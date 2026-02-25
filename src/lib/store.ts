@@ -1,103 +1,165 @@
-import { Borrower, Transaction, BorrowerSummary } from '@/types';
+import { supabase } from "@/lib/supabase";
+import { Borrower, Transaction } from "@/types";
 
-const BORROWERS_KEY = 'lendtracker_borrowers';
-const TRANSACTIONS_KEY = 'lendtracker_transactions';
+/* ===========================
+   BORROWERS
+=========================== */
 
-function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+export async function getBorrowers(): Promise<Borrower[]> {
+  const { data, error } = await supabase
+    .from("borrowers")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching borrowers:", error);
+    throw error;
+  }
+
+  return data ?? [];
 }
 
-// Borrowers
-export function getBorrowers(): Borrower[] {
-  const data = localStorage.getItem(BORROWERS_KEY);
-  return data ? JSON.parse(data) : [];
+export async function addBorrower(name: string): Promise<Borrower> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("User not authenticated");
+
+  const { data, error } = await supabase
+    .from("borrowers")
+    .insert({
+      name,
+      user_id: user.id,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error adding borrower:", error);
+    throw error;
+  }
+
+  return data;
 }
 
-export function addBorrower(b: Omit<Borrower, 'id' | 'createdAt'>): Borrower {
-  const borrowers = getBorrowers();
-  const newB: Borrower = { ...b, id: generateId(), createdAt: new Date().toISOString() };
-  borrowers.push(newB);
-  localStorage.setItem(BORROWERS_KEY, JSON.stringify(borrowers));
-  return newB;
-}
+export async function updateBorrower(
+  id: string,
+  updates: Partial<Pick<Borrower, "name">>
+): Promise<void> {
+  const { error } = await supabase
+    .from("borrowers")
+    .update(updates)
+    .eq("id", id);
 
-export function updateBorrower(id: string, updates: Partial<Omit<Borrower, 'id' | 'createdAt'>>): void {
-  const borrowers = getBorrowers();
-  const idx = borrowers.findIndex(b => b.id === id);
-  if (idx !== -1) {
-    borrowers[idx] = { ...borrowers[idx], ...updates };
-    localStorage.setItem(BORROWERS_KEY, JSON.stringify(borrowers));
+  if (error) {
+    console.error("Error updating borrower:", error);
+    throw error;
   }
 }
 
-export function deleteBorrower(id: string): void {
-  const borrowers = getBorrowers().filter(b => b.id !== id);
-  localStorage.setItem(BORROWERS_KEY, JSON.stringify(borrowers));
-  const txns = getTransactions().filter(t => t.borrowerId !== id);
-  localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(txns));
+export async function deleteBorrower(id: string): Promise<void> {
+  const { error: txnError } = await supabase
+    .from("transactions")
+    .delete()
+    .eq("borrower_id", id);
+
+  if (txnError) {
+    console.error("Error deleting related transactions:", txnError);
+    throw txnError;
+  }
+
+  const { error } = await supabase
+    .from("borrowers")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error deleting borrower:", error);
+    throw error;
+  }
 }
 
-// Transactions
-export function getTransactions(): Transaction[] {
-  const data = localStorage.getItem(TRANSACTIONS_KEY);
-  return data ? JSON.parse(data) : [];
+/* ===========================
+   TRANSACTIONS
+=========================== */
+
+export async function getTransactionsByBorrower(
+  borrowerId: string
+): Promise<Transaction[]> {
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("*")
+    .eq("borrower_id", borrowerId)
+    .order("date", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching transactions:", error);
+    throw error;
+  }
+
+  return data ?? [];
 }
 
-export function getTransactionsByBorrower(borrowerId: string): Transaction[] {
-  return getTransactions()
-    .filter(t => t.borrowerId === borrowerId)
-    .sort((a, b) => new Date(b.date + 'T' + b.time).getTime() - new Date(a.date + 'T' + a.time).getTime());
+export async function addTransaction(t: {
+  borrower_id: string;
+  amount: number;
+  type: "lent" | "received";
+  date: string;
+  time?: string;
+  notes?: string;
+}): Promise<Transaction> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("User not authenticated");
+
+  const { data, error } = await supabase
+    .from("transactions")
+    .insert({
+      borrower_id: t.borrower_id,
+      amount: t.amount,
+      type: t.type,
+      date: t.date,
+      time: t.time,
+      notes: t.notes,
+      user_id: user.id,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error adding transaction:", error);
+    throw error;
+  }
+
+  return data;
 }
 
-export function addTransaction(t: Omit<Transaction, 'id' | 'createdAt'>): Transaction {
-  const txns = getTransactions();
-  const newT: Transaction = { ...t, id: generateId(), createdAt: new Date().toISOString() };
-  txns.push(newT);
-  localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(txns));
-  return newT;
+export async function updateTransaction(
+  id: string,
+  updates: Partial<Pick<Transaction, "amount" | "type" | "date">>
+): Promise<void> {
+  const { error } = await supabase
+    .from("transactions")
+    .update(updates)
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error updating transaction:", error);
+    throw error;
+  }
 }
 
-export function deleteTransaction(id: string): void {
-  const txns = getTransactions().filter(t => t.id !== id);
-  localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(txns));
-}
+export async function deleteTransaction(id: string): Promise<void> {
+  const { error } = await supabase
+    .from("transactions")
+    .delete()
+    .eq("id", id);
 
-// Summaries
-export function getBorrowerSummaries(): BorrowerSummary[] {
-  const borrowers = getBorrowers();
-  const txns = getTransactions();
-
-  return borrowers.map(b => {
-    const bTxns = txns.filter(t => t.borrowerId === b.id);
-    const totalLent = bTxns.filter(t => t.type === 'lent').reduce((s, t) => s + t.amount, 0);
-    const totalReceived = bTxns.filter(t => t.type === 'received').reduce((s, t) => s + t.amount, 0);
-    return { ...b, totalLent, totalReceived, balance: totalLent - totalReceived };
-  });
-}
-
-export function getDashboardStats() {
-  const summaries = getBorrowerSummaries();
-  return {
-    totalLent: summaries.reduce((s, b) => s + b.totalLent, 0),
-    totalReceived: summaries.reduce((s, b) => s + b.totalReceived, 0),
-    totalOutstanding: summaries.reduce((s, b) => s + b.balance, 0),
-    activeBorrowers: summaries.filter(b => b.balance > 0).length,
-  };
-}
-
-// CSV Export
-export function exportToCSV(): string {
-  const summaries = getBorrowerSummaries();
-  const txns = getTransactions();
-  const borrowerMap = Object.fromEntries(summaries.map(b => [b.id, b.name]));
-
-  const lines = ['Borrower,Type,Amount,Date,Time,Notes'];
-  txns
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .forEach(t => {
-      lines.push(
-        `"${borrowerMap[t.borrowerId] || 'Unknown'}","${t.type}",${t.amount},"${t.date}","${t.time}","${(t.notes || '').replace(/"/g, '""')}"`
-      );
-    });
-  return lines.join('\n');
+  if (error) {
+    console.error("Error deleting transaction:", error);
+    throw error;
+  }
 }

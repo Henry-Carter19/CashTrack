@@ -1,20 +1,22 @@
 export interface Borrower {
   id: string;
+  user_id: string;
   name: string;
-  phone: string;
-  notes: string;
-  createdAt: string;
+  phone?: string | null;
+  notes?: string | null;
+  created_at: string;
 }
 
 export interface Transaction {
   id: string;
-  borrowerId: string;
-  type: 'lent' | 'received';
+  user_id: string;
+  borrower_id: string;
+  type: "lent" | "received";
   amount: number;
   date: string;
-  time: string;
-  notes: string;
-  createdAt: string;
+  time?: string;
+  notes?: string;
+  created_at: string;
 }
 
 export interface BorrowerSummary extends Borrower {
