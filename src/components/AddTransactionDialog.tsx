@@ -82,7 +82,7 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
         <Button
           variant={isLent ? "default" : "outline"}
           size="sm"
-          className="gap-2"
+          className="gap-2 w-full"
         >
           {isLent ? (
             <ArrowUpRight className="h-4 w-4" />
