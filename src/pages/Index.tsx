@@ -8,20 +8,18 @@ import { BorrowerList } from "@/components/BorrowerList";
 import { AddBorrowerDialog } from "@/components/AddBorrowerDialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Download, Wallet } from "lucide-react";
+import { Search, Download } from "lucide-react";
 import { UserMenu } from "@/components/UserMenu";
 
 const Index = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
-  // Fetch borrowers
-  const { data: borrowers = [], refetch } = useQuery({
+  const { data: borrowers = [] } = useQuery({
     queryKey: ["borrowers"],
     queryFn: getBorrowers,
   });
 
-  // Fetch all transactions for each borrower
   const { data: transactions = [] } = useQuery({
     queryKey: ["all-transactions"],
     queryFn: async () => {
@@ -33,7 +31,6 @@ const Index = () => {
     enabled: borrowers.length > 0,
   });
 
-  // Compute summaries
   const summaries: BorrowerSummary[] = useMemo(() => {
     return borrowers.map((b) => {
       const bTxns = transactions.filter(
@@ -57,7 +54,6 @@ const Index = () => {
     });
   }, [borrowers, transactions]);
 
-  // Dashboard stats
   const stats = useMemo(() => {
     return {
       totalLent: summaries.reduce((s, b) => s + b.totalLent, 0),
@@ -97,25 +93,25 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container flex items-center justify-between h-14 md:h-16">
-          <div className="flex items-center gap-2.5">
-            <div className="flex items-center justify-center ">
-               <img
+        <div className="container px-4 flex items-center justify-between h-14 md:h-16">
+          <div className="flex items-center gap-2">
+            <img
               src="/cashtrack.png"
-              alt="User"
-              className="h-12 w-12"
-              />
-              </div>
-            <h1 className="text-lg font-bold tracking-tight">
+              alt="Logo"
+              className="h-9 w-9 sm:h-11 sm:w-11 object-contain"
+            />
+            <h1 className="text-base sm:text-lg font-semibold tracking-tight">
               Cash Track
             </h1>
           </div>
-          <div className="flex items-center gap-2">
+
+          {/* Desktop Buttons */}
+          <div className="hidden sm:flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleExport}
-              className="gap-2 hidden sm:flex"
+              className="gap-2 text-xs"
             >
               <Download className="h-4 w-4" />
               Export
@@ -123,29 +119,41 @@ const Index = () => {
 
             <AddBorrowerDialog />
 
-            <div className="flex items-center gap-3">
-              <UserMenu />
-            </div>
+            <UserMenu />
+          </div>
+
+          {/* Mobile User */}
+          <div className="sm:hidden">
+            <UserMenu />
           </div>
         </div>
       </header>
 
-      <main className="container py-6 space-y-6">
-        <StatsCards {...stats} />
+      <main className="container px-4 py-6 space-y-6">
+        <div className="text-sm">
+          <StatsCards {...stats} />
+        </div>
 
         <div className="space-y-4">
+          {/* Borrowers Header */}
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">
+            <h2 className="text-base sm:text-lg font-semibold">
               Borrowers
             </h2>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleExport}
-              className="gap-2 sm:hidden"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
+
+            {/* Mobile Buttons */}
+            <div className="flex items-center gap-2 sm:hidden">
+              <AddBorrowerDialog />
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleExport}
+                className="p-2"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           <div className="relative">
@@ -156,7 +164,7 @@ const Index = () => {
               onChange={(e) =>
                 setSearch(e.target.value)
               }
-              className="pl-9 bg-white/50 "
+              className="pl-9 bg-white/50 text-sm"
             />
           </div>
 
