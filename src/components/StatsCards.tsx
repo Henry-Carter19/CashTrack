@@ -1,4 +1,4 @@
-import { DollarSign, ArrowUpRight, ArrowDownLeft, Users } from 'lucide-react';
+import { IndianRupee, ArrowUpRight, ArrowDownLeft, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface Props {
@@ -9,14 +9,14 @@ interface Props {
 }
 
 function formatCurrency(n: number) {
-  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+  return '₹' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
 }
 
 export function StatsCards({ totalLent, totalReceived, totalOutstanding, activeBorrowers }: Props) {
   const stats = [
     { label: 'Total Lent', value: formatCurrency(totalLent), icon: ArrowUpRight, color: 'text-destructive' },
     { label: 'Total Received', value: formatCurrency(totalReceived), icon: ArrowDownLeft, color: 'text-primary' },
-    { label: 'Outstanding', value: formatCurrency(totalOutstanding), icon: DollarSign, color: totalOutstanding > 0 ? 'text-warning' : 'text-primary' },
+    { label: 'Outstanding', value: formatCurrency(totalOutstanding), icon: IndianRupee, color: totalOutstanding > 0 ? 'text-warning' : 'text-primary' },
     { label: 'Active Borrowers', value: activeBorrowers.toString(), icon: Users, color: 'text-foreground' },
   ];
 

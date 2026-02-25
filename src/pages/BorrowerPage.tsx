@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Phone, Trash2, Wallet } from 'lucide-react';
 
 function formatCurrency(n: number) {
-  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+  return '₹' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
 }
 
 const BorrowerPage = () => {
@@ -57,7 +57,7 @@ const BorrowerPage = () => {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Wallet className="h-4 w-4" />
             </div>
-            <h1 className="text-lg font-bold tracking-tight">LendTracker</h1>
+            <h1 className="text-lg font-bold tracking-tight">Cash Track</h1>
           </div>
         </div>
       </header>

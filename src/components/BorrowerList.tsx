@@ -8,7 +8,7 @@ interface Props {
 }
 
 function formatCurrency(n: number) {
-  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+  return '₹' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
 }
 
 export function BorrowerList({ borrowers, onSelect }: Props) {

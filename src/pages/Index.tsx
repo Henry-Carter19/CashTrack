@@ -45,7 +45,7 @@ const Index = () => {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Wallet className="h-4 w-4" />
             </div>
-            <h1 className="text-lg font-bold tracking-tight">LendTracker</h1>
+            <h1 className="text-lg font-bold tracking-tight">Cash Track</h1>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={handleExport} className="gap-2 hidden sm:flex">

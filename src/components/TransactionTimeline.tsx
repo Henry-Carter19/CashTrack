@@ -39,7 +39,7 @@ export function TransactionTimeline({ transactions, onUpdate }: Props) {
             <div className="flex-1 min-w-0">
               <div className="flex items-baseline justify-between gap-2">
                 <span className={`font-mono font-semibold text-lg ${isLent ? 'text-destructive' : 'text-primary'}`}>
-                  {isLent ? '-' : '+'}${t.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  {isLent ? '-' : '+'}₹{t.amount.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                 </span>
                 <span className="text-xs text-muted-foreground shrink-0">
                   {format(new Date(t.date), 'MMM d, yyyy')} · {t.time}
