@@ -52,20 +52,12 @@ const App = () => (
         {/* Protected Routes */}
         <Route
           path="/"
-          element={
-            <ProtectedRoute>
-              <Index />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute><Index /></ProtectedRoute>}
         />
 
         <Route
           path="/borrower/:id"
-          element={
-            <ProtectedRoute>
-              <BorrowerPage />
-            </ProtectedRoute>
-          }
+           element={<ProtectedRoute><BorrowerPage /></ProtectedRoute>}
         />
 
         <Route
