@@ -9,6 +9,7 @@ import { AddBorrowerDialog } from "@/components/AddBorrowerDialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Download, Wallet } from "lucide-react";
+import { UserMenu } from "@/components/UserMenu";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -117,6 +118,10 @@ const Index = () => {
             </Button>
 
             <AddBorrowerDialog />
+
+            <div className="flex items-center gap-3">
+              <UserMenu />
+            </div>
           </div>
         </div>
       </header>
@@ -147,7 +152,7 @@ const Index = () => {
               onChange={(e) =>
                 setSearch(e.target.value)
               }
-              className="pl-9"
+              className="pl-9 bg-white/50 "
             />
           </div>
 
