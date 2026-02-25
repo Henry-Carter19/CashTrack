@@ -55,7 +55,7 @@ export function EditTransactionDialog({ transaction }: Props) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent>
+      <DialogContent className="w-[90%] max-w-md rounded-xl">
         <DialogHeader>
           <DialogTitle>Edit Transaction</DialogTitle>
         </DialogHeader>

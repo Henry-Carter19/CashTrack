@@ -47,7 +47,7 @@ export function EditBorrowerDialog({ borrower }: Props) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent>
+     <DialogContent className="w-[90%] max-w-md rounded-xl">
         <DialogHeader>
           <DialogTitle>Edit Borrower</DialogTitle>
         </DialogHeader>
