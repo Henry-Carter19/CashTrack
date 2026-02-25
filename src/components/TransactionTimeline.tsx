@@ -17,19 +17,13 @@ export function TransactionTimeline({ transactions }: Props) {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteTransaction(id),
     onSuccess: () => {
-      // Invalidate all transaction queries (including ["transactions", borrowerId])
       queryClient.invalidateQueries({
         queryKey: ["transactions"],
         exact: false,
       });
-
-      // Refresh borrower summaries
       queryClient.invalidateQueries({
         queryKey: ["borrowers"],
       });
-    },
-    onError: (error) => {
-      console.error("Delete transaction failed:", error);
     },
   });
 
@@ -47,32 +41,31 @@ export function TransactionTimeline({ transactions }: Props) {
         const isLent = t.type === "lent";
 
         const dateObj = new Date(t.date);
-
-        // Extract year-month-day safely
         const yyyy = dateObj.getFullYear();
         const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
         const dd = String(dateObj.getDate()).padStart(2, "0");
 
-        // Combine with stored time
-        const combined = new Date(`${yyyy}-${mm}-${dd}T${t.time ?? "00:00"}`);
+        const combined = new Date(
+          `${yyyy}-${mm}-${dd}T${t.time ?? "00:00"}`
+        );
 
         const formattedDate = format(
           combined,
           "MMM d, yyyy • hh:mm a"
         );
-        console.log("Rendering transaction:", t);
 
         return (
           <div
             key={t.id}
-            className="flex items-start gap-4 rounded-lg border bg-card p-4"
+            className="flex gap-3 sm:gap-4 rounded-lg border bg-card p-3 sm:p-4"
           >
             {/* Icon */}
             <div
-              className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${isLent
-                ? "bg-destructive/10 text-destructive"
-                : "bg-accent text-accent-foreground"
-                }`}
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+                isLent
+                  ? "bg-destructive/10 text-destructive"
+                  : "bg-accent text-accent-foreground"
+              }`}
             >
               {isLent ? (
                 <ArrowUpRight className="h-4 w-4" />
@@ -83,10 +76,14 @@ export function TransactionTimeline({ transactions }: Props) {
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-baseline justify-between gap-2">
+              {/* Top Row */}
+              <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-1">
                 <span
-                  className={`font-mono font-semibold text-lg ${isLent ? "text-destructive" : "text-primary"
-                    }`}
+                  className={`font-mono font-semibold text-base sm:text-lg ${
+                    isLent
+                      ? "text-destructive"
+                      : "text-primary"
+                  }`}
                 >
                   {isLent ? "-" : "+"}₹
                   {t.amount.toLocaleString("en-IN", {
@@ -94,37 +91,38 @@ export function TransactionTimeline({ transactions }: Props) {
                   })}
                 </span>
 
-                <span className="text-xs text-muted-foreground shrink-0 whitespace-nowrap">
+                <span className="text-[11px] sm:text-xs text-muted-foreground">
                   {formattedDate}
                 </span>
               </div>
 
-              <p className="text-sm text-muted-foreground mt-0.5">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 {isLent ? "Money lent" : "Payment received"}
               </p>
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex flex-col sm:flex-row items-center gap-1 shrink-0">
               <EditTransactionDialog transaction={t} />
 
               <ConfirmDialog
                 title="Delete Transaction"
                 description="Are you sure you want to delete this transaction?"
                 loading={deleteMutation.isPending}
-                onConfirm={() => deleteMutation.mutate(t.id)}
+                onConfirm={() =>
+                  deleteMutation.mutate(t.id)
+                }
                 trigger={
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="shrink-0 h-8 w-8 text-muted-foreground hover:text-destructive"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 }
               />
             </div>
-
           </div>
         );
       })}

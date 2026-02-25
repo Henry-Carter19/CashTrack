@@ -93,7 +93,7 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent>
+ <DialogContent className="w-[90%] max-w-md rounded-xl">
         <DialogHeader>
           <DialogTitle>
             {isLent ? "Lend Money" : "Record Repayment"}
