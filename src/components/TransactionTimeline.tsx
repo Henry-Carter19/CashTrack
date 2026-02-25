@@ -87,7 +87,7 @@ export function TransactionTimeline({ transactions }: Props) {
                 >
                   {isLent ? "-" : "+"}₹
                   {t.amount.toLocaleString("en-IN", {
-                    minimumFractionDigits: 2,
+                    minimumFractionDigits: 0,
                   })}
                 </span>
 
