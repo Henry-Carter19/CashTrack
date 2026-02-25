@@ -1,5 +1,20 @@
-import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
-import "./index.css";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
 
-createRoot(document.getElementById("root")!).render(<App />);
+
+const Client_ID = import.meta.env.VITE_CLIENT_ID;
+
+console.log("Client ID:", Client_ID);
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <GoogleOAuthProvider clientId={Client_ID}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </GoogleOAuthProvider>
+  </React.StrictMode>
+);
