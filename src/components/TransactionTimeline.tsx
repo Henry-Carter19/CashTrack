@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { deleteTransaction } from "@/lib/store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { EditTransactionDialog } from "./EditTransactionDialog";
+import { ConfirmDialog } from "./ConfirmDialog";
 
 interface Props {
   transactions: Transaction[];
@@ -69,8 +70,8 @@ export function TransactionTimeline({ transactions }: Props) {
             {/* Icon */}
             <div
               className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${isLent
-                  ? "bg-destructive/10 text-destructive"
-                  : "bg-accent text-accent-foreground"
+                ? "bg-destructive/10 text-destructive"
+                : "bg-accent text-accent-foreground"
                 }`}
             >
               {isLent ? (
@@ -107,16 +108,21 @@ export function TransactionTimeline({ transactions }: Props) {
             <div className="flex items-center gap-1 shrink-0">
               <EditTransactionDialog transaction={t} />
 
-              <Button
-                variant="ghost"
-                size="icon"
-                // className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                 className="shrink-0 h-8 w-8 text-muted-foreground hover:text-destructive"
-                onClick={() => deleteMutation.mutate(t.id)}
-                disabled={deleteMutation.isPending}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
+              <ConfirmDialog
+                title="Delete Transaction"
+                description="Are you sure you want to delete this transaction?"
+                loading={deleteMutation.isPending}
+                onConfirm={() => deleteMutation.mutate(t.id)}
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 h-8 w-8 text-muted-foreground hover:text-destructive"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                }
+              />
             </div>
 
           </div>

@@ -99,9 +99,13 @@ const Index = () => {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container flex items-center justify-between h-14 md:h-16">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Wallet className="h-4 w-4" />
-            </div>
+            <div className="flex items-center justify-center ">
+               <img
+              src="/cashtrack.png"
+              alt="User"
+              className="h-12 w-12"
+              />
+              </div>
             <h1 className="text-lg font-bold tracking-tight">
               Cash Track
             </h1>

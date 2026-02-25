@@ -14,6 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Phone, Trash2, Wallet } from "lucide-react";
 import { Pencil } from "lucide-react";
 import { EditBorrowerDialog } from "@/components/EditBorrowerDialog";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 function formatCurrency(n: number) {
   return "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2 });
@@ -80,15 +81,15 @@ const BorrowerPage = () => {
 
   console.log("Transactions for borrower:", borrower);
 
-  const handleDelete = () => {
-    if (
-      confirm(
-        `Delete ${borrower.name} and all their transactions?`
-      )
-    ) {
-      deleteMutation.mutate();
-    }
-  };
+  // const handleDelete = () => {
+  //   if (
+  //     confirm(
+  //       `Delete ${borrower.name} and all their transactions?`
+  //     )
+  //   ) {
+  //     deleteMutation.mutate();
+  //   }
+  // };
 
   return (
     <div className="min-h-screen bg-background">
@@ -140,14 +141,21 @@ const BorrowerPage = () => {
           <div className="flex items-center gap-2 shrink-0">
             <EditBorrowerDialog borrower={borrower} />
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleDelete}
-              className="text-muted-foreground hover:text-destructive"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <ConfirmDialog
+              title="Delete Borrower"
+              description={`Are you sure you want to delete ${borrower.name}? This will permanently remove all transactions.`}
+              loading={deleteMutation.isPending}
+              onConfirm={() => deleteMutation.mutate()}
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              }
+            />
           </div>
 
 
@@ -184,8 +192,8 @@ const BorrowerPage = () => {
               </p>
               <p
                 className={`font-mono font-bold text-lg ${balance > 0
-                    ? "text-warning"
-                    : "text-primary"
+                  ? "text-warning"
+                  : "text-primary"
                   }`}
               >
                 {formatCurrency(balance)}
