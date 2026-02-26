@@ -10,7 +10,7 @@ import { TransactionTimeline } from "@/components/TransactionTimeline";
 import { AddTransactionDialog } from "@/components/AddTransactionDialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Phone, Trash2 } from "lucide-react";
+import { ArrowLeft, Phone, Trash2, Share2 } from "lucide-react";
 import { EditBorrowerDialog } from "@/components/EditBorrowerDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 
@@ -60,6 +60,38 @@ const BorrowerPage = () => {
     },
   });
 
+  // ✅ SHARE FUNCTION
+  const handleShare = () => {
+    if (!borrower) return;
+
+    const lines: string[] = [];
+
+    lines.push(`📊 CashTrack Summary`);
+    lines.push(``);
+    lines.push(`👤 Borrower: ${borrower.name}`);
+    lines.push(``);
+    lines.push(`💰 Total Lent: ${formatCurrency(totalLent)}`);
+    lines.push(`💵 Total Received: ${formatCurrency(totalReceived)}`);
+    lines.push(`📌 Balance: ${formatCurrency(balance)}`);
+    lines.push(``);
+    lines.push(`🧾 Transactions:`);
+
+    transactions.forEach((t) => {
+      const type = t.type === "lent" ? "Lent" : "Received";
+      const date = new Date(t.date).toLocaleDateString("en-IN");
+
+      lines.push(`${date} - ${type} ₹${t.amount}`);
+    });
+
+    const message = lines.join("\n");
+
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.open(whatsappUrl, "_blank");
+  };
+
   if (!borrower) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -73,13 +105,11 @@ const BorrowerPage = () => {
     );
   }
 
-
   return (
     <div className="min-h-screen bg-background">
       {/* HEADER */}
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container px-4 flex items-center h-14 md:h-16 gap-2">
-
           <Button
             variant="ghost"
             size="icon"
@@ -103,7 +133,6 @@ const BorrowerPage = () => {
       </header>
 
       <main className="container px-4 py-6 space-y-6">
-
         {/* Borrower Info */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -131,7 +160,18 @@ const BorrowerPage = () => {
             </div>
           </div>
 
+          {/* ACTION BUTTONS */}
           <div className="flex items-center gap-1 shrink-0">
+            {/* Share */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-muted-foreground hover:text-destructive"
+              onClick={handleShare}
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+
             <EditBorrowerDialog borrower={borrower} />
 
             <ConfirmDialog
@@ -182,8 +222,9 @@ const BorrowerPage = () => {
                 Balance
               </p>
               <p
-                className={`font-mono font-semibold text-base sm:text-lg ${balance > 0 ? "text-warning" : "text-primary"
-                  }`}
+                className={`font-mono font-semibold text-base sm:text-lg ${
+                  balance > 0 ? "text-warning" : "text-primary"
+                }`}
               >
                 {formatCurrency(balance)}
               </p>
