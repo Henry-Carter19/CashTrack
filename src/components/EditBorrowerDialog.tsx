@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil } from "lucide-react";
+import { Pencil, Loader2 } from "lucide-react";
 import { Borrower } from "@/types";
 
 interface Props {
@@ -30,8 +30,8 @@ export function EditBorrowerDialog({ borrower }: Props) {
     mutationFn: async () =>
       updateBorrower(borrower.id, {
         name,
-        phone,
-        notes,
+        phone: phone.trim() || undefined,
+        notes: notes.trim() || undefined,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["borrowers"] });
@@ -42,31 +42,51 @@ export function EditBorrowerDialog({ borrower }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" className="text-muted-foreground hover:text-destructive" size="icon">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-primary transition-colors"
+        >
           <Pencil className="h-4 w-4" />
         </Button>
       </DialogTrigger>
 
-     <DialogContent className="w-[90%] max-w-md rounded-xl">
-        <DialogHeader>
-          <DialogTitle>Edit Borrower</DialogTitle>
+      <DialogContent
+        className=" w-[90%] max-w-md rounded-xl p-6 animate-in fade-in-0 zoom-in-95 duration-200"
+      >
+        <DialogHeader className="mb-4">
+          <DialogTitle className="text-lg font-semibold">
+            Edit Borrower
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 animate-in fade-in-0 duration-300">
           <div className="space-y-2">
             <Label>Name</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
+            <Input
+              placeholder="Enter borrower name"
+              value={name}
+              disabled={mutation.isPending}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
             <Label>Phone</Label>
-            <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+            <Input
+              placeholder="+91 9876543210"
+              value={phone}
+              disabled={mutation.isPending}
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
             <Label>Notes</Label>
             <Textarea
+              placeholder="Optional notes about this borrower"
               value={notes}
+              disabled={mutation.isPending}
               onChange={(e) => setNotes(e.target.value)}
             />
           </div>
@@ -74,8 +94,11 @@ export function EditBorrowerDialog({ borrower }: Props) {
           <Button
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
-            className="w-full"
+            className="w-full flex items-center justify-center gap-2"
           >
+            {mutation.isPending && (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            )}
             {mutation.isPending ? "Updating..." : "Update"}
           </Button>
         </div>

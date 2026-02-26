@@ -30,14 +30,17 @@ export async function addBorrower(data: {
 
   if (!user) throw new Error("User not authenticated");
 
+  // Build payload safely without nulls
+  const payload = {
+    name: data.name,
+    user_id: user.id,
+    ...(data.phone ? { phone: data.phone } : {}),
+    ...(data.notes ? { notes: data.notes } : {}),
+  };
+
   const { data: inserted, error } = await supabase
     .from("borrowers")
-    .insert({
-      name: data.name,
-      phone: data.phone || null,
-      notes: data.notes || null,
-      user_id: user.id,
-    })
+    .insert(payload)
     .select()
     .single();
 
@@ -48,21 +51,6 @@ export async function addBorrower(data: {
 
   return inserted;
 }
-
-// export async function updateBorrower(
-//   id: string,
-//   updates: Partial<Pick<Borrower, "name">>
-// ): Promise<void> {
-//   const { error } = await supabase
-//     .from("borrowers")
-//     .update(updates)
-//     .eq("id", id);
-
-//   if (error) {
-//     console.error("Error updating borrower:", error);
-//     throw error;
-//   }
-// }
 
 export async function updateBorrower(
   id: string,
@@ -166,21 +154,6 @@ export async function addTransaction(t: {
 
   return data;
 }
-
-// export async function updateTransaction(
-//   id: string,
-//   updates: Partial<Pick<Transaction, "amount" | "type" | "date">>
-// ): Promise<void> {
-//   const { error } = await supabase
-//     .from("transactions")
-//     .update(updates)
-//     .eq("id", id);
-
-//   if (error) {
-//     console.error("Error updating transaction:", error);
-//     throw error;
-//   }
-// }
 
 export async function updateTransaction(
   id: string,
