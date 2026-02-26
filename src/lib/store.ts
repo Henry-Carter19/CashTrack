@@ -125,7 +125,7 @@ export async function addTransaction(t: {
   type: "lent" | "received";
   date: string;
   time?: string;
-  notes?: string;
+  notes?: string | null;
 }): Promise<Transaction> {
   const {
     data: { user },
@@ -133,17 +133,28 @@ export async function addTransaction(t: {
 
   if (!user) throw new Error("User not authenticated");
 
+  const payload: {
+    borrower_id: string;
+    amount: number;
+    type: "lent" | "received";
+    date: string;
+    user_id: string;
+    time?: string;
+    notes?: string | null;
+  } = {
+    borrower_id: t.borrower_id,
+    amount: t.amount,
+    type: t.type,
+    date: t.date,
+    user_id: user.id,
+  };
+
+  if (t.time) payload.time = t.time;
+  if (t.notes && t.notes.trim() !== "") payload.notes = t.notes;
+
   const { data, error } = await supabase
     .from("transactions")
-    .insert({
-      borrower_id: t.borrower_id,
-      amount: t.amount,
-      type: t.type,
-      date: t.date,
-      time: t.time,
-      notes: t.notes,
-      user_id: user.id,
-    })
+    .insert(payload)
     .select()
     .single();
 
@@ -161,6 +172,7 @@ export async function updateTransaction(
     amount?: number;
     date?: string;
     time?: string;
+    notes?: string | null;
   }
 ): Promise<void> {
   const { error } = await supabase
@@ -169,6 +181,7 @@ export async function updateTransaction(
       amount: updates.amount,
       date: updates.date,
       time: updates.time,
+      notes: updates.notes ?? null,
     })
     .eq("id", id);
 

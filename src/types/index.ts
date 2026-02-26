@@ -15,7 +15,7 @@ export interface Transaction {
   amount: number;
   date: string;
   time?: string;
-  notes?: string;
+  notes?: string | null; // nullable field coming from the database
   created_at: string;
 }
 

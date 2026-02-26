@@ -97,7 +97,8 @@ export function TransactionTimeline({ transactions }: Props) {
               </div>
 
               <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                {isLent ? "Money lent" : "Payment received"}
+                {isLent ? "Money lent" : "Payment received"}    
+                {t.notes && <> - {t.notes} </> }
               </p>
             </div>
 

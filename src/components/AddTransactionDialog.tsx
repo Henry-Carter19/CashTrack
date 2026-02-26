@@ -11,7 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowUpRight, ArrowDownLeft, Loader2 } from "lucide-react";
 
 interface Props {
   borrowerId: string;
@@ -23,6 +24,7 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
   const [amount, setAmount] = useState("");
   const [time, setTime] = useState("");
   const [date, setDate] = useState("");
+  const [notes, setNotes] = useState("");
 
   const queryClient = useQueryClient();
   const isLent = type === "lent";
@@ -40,6 +42,7 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
         amount: amt,
         date,
         time,
+        notes: notes.trim() || undefined,
       });
     },
     onSuccess: () => {
@@ -51,12 +54,10 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
       });
 
       setAmount("");
+      setNotes("");
       setDate(new Date().toISOString().split("T")[0]);
       setTime(new Date().toTimeString().slice(0, 5));
       setOpen(false);
-    },
-    onError: (error) => {
-      console.error("Add transaction failed:", error);
     },
   });
 
@@ -93,14 +94,14 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
         </Button>
       </DialogTrigger>
 
- <DialogContent className="w-[90%] max-w-md rounded-xl">
+      <DialogContent className="w-[92%] max-w-md rounded-xl p-6">
         <DialogHeader>
           <DialogTitle>
             {isLent ? "Lend Money" : "Record Repayment"}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
             <Label htmlFor="amount">Amount *</Label>
             <Input
@@ -112,6 +113,18 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
               required
+              disabled={mutation.isPending}
+            />
+          </div>
+
+           <div className="space-y-2">
+            <Label htmlFor="notes">Notes</Label>
+            <Input
+              id="notes"
+              placeholder="Optional notes about this transaction"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              disabled={mutation.isPending}
             />
           </div>
 
@@ -123,6 +136,7 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                disabled={mutation.isPending}
               />
             </div>
 
@@ -133,20 +147,24 @@ export function AddTransactionDialog({ borrowerId, type }: Props) {
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
+                disabled={mutation.isPending}
               />
             </div>
           </div>
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full flex items-center justify-center gap-2"
             disabled={mutation.isPending}
           >
+            {mutation.isPending && (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            )}
             {mutation.isPending
               ? "Recording..."
               : isLent
-                ? "Record Lending"
-                : "Record Payment"}
+              ? "Record Lending"
+              : "Record Payment"}
           </Button>
         </form>
       </DialogContent>
